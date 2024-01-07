@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container" style="margin-top: 50px; max-height:100vh; overflow-y:scroll">
     {% if not get_history %}
-    <h1 class="text-center">Hi {{request.user.username}} 👋, Let's Talk!🤖</h1>
+    <h1 class="text-center">Hi {{request.user.username}} 👋, Let's Talk!</h1>
     {% endif %}
     <ol class="list-group mt-5">
         {% for history in get_history %}
@@ -37,8 +37,7 @@
             {% if get_history %}
             <a href="{% url 'deleteChat'  %}" class="btn btn-warning">Delete Chat <i class="bi bi-x-square"></i></a>
             {% endif %}
-            <a href="{% url 'logout'  %}" class="link-danger text-decoration-none">Log out <i
-                    class="bi bi-door-open"></i></a>
+            <a href="{% url 'logout'  %}" class="link-danger text-decoration-none">Log out</a>
         </div>
 
     </form>
