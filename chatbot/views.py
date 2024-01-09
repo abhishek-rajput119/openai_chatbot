@@ -4,11 +4,51 @@ from django.views.generic import CreateView, FormView
 from django.contrib import messages
 
 from chatbot.forms import SignUpForm, UserLoginForm
+from chatbot.models import Chat
+import openai
+from openai import OpenAI
 
+client = OpenAI(
+    api_key="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",
+)
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'index.html')
+        if request.method == 'POST':
+            try:
+                user_input = request.POST.get('userInput')
+
+                clean_user_input = str(user_input).strip()
+
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": clean_user_input,
+                        }
+                    ],
+                )
+                # get response
+
+                bot_response = response.choices[0].message.content
+
+                obj, created = Chat.objects.get_or_create(
+                    user=request.user,
+                    messageInput=clean_user_input,
+                    bot_response=bot_response,
+                )
+            except openai.APIConnectionError as e:
+                messages.warning(request, f"Failed to connect to OpenAI API")
+            except openai.RateLimitError as e:
+                messages.warning(request,
+                                 f"You exceeded your current quota.")
+            return redirect(request.META['HTTP_REFERER'])
+        else:
+            # retrieve all messages belong to logged in user
+            get_history = Chat.objects.filter(user=request.user)
+            context = {'get_history': get_history}
+            return render(request, 'index.html', context)
     else:
         return redirect("login")
 
