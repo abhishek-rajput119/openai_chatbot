@@ -2,14 +2,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, reverse, redirect
 from django.views.generic import CreateView, FormView
 from django.contrib import messages
-
+from os import getenv
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 from chatbot.forms import SignUpForm, UserLoginForm
 from chatbot.models import Chat
 import openai
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="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",
+    api_key=getenv("OPENAI_API_KEY"),
 )
 
 def index(request):
@@ -41,8 +43,9 @@ def index(request):
             except openai.APIConnectionError as e:
                 messages.warning(request, f"Failed to connect to OpenAI API")
             except openai.RateLimitError as e:
-                messages.warning(request,
-                                 f"You exceeded your current quota.")
+                messages.warning(request, f"You exceeded your current quota.")
+            except openai.AuthenticationError as e:
+                messages.warning(request, f"Incorrect API key provided.")
             return redirect(request.META['HTTP_REFERER'])
         else:
             # retrieve all messages belong to logged in user
