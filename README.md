@@ -6,7 +6,7 @@ This project utilizes OpenAI APIs to create a chatbot, stores conversation histo
 
 - Python 3.6 or higher
 - Git installed
-- OpenAI API key (you can obtain it from [OpenAI](https://beta.openai.com/signup/))
+- OpenAI API key (you can obtain it from [OpenAI](https://platform.openai.com/docs/overview))
 
 ### Installation
 
